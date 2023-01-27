@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="stylesheet" href="css/leaflet.css"><link rel="stylesheet" href="css/L.Control.Locate.min.css">
+        <link rel="stylesheet" href="css/qgis2web.css"><link rel="stylesheet" href="css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="css/filter.css">
+<link rel="stylesheet" href="css/nouislider.min.css">
+        <link rel="stylesheet" href="css/leaflet-measure.css">
+        <style>
+        html, body, #map {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+        </style>
+        <title></title>
+    </head>
+    <body>
+        <div id="map">
+        </div>
+        <script src="js/qgis2web_expressions.js"></script>
+        <script src="js/leaflet.js"></script><script src="js/L.Control.Locate.min.js"></script>
+        <script src="js/leaflet.rotatedMarker.js"></script>
+        <script src="js/leaflet.pattern.js"></script>
+        <script src="js/leaflet-hash.js"></script>
+        <script src="js/Autolinker.min.js"></script>
+        <script src="js/rbush.min.js"></script>
+        <script src="js/labelgun.min.js"></script>
+        <script src="js/labels.js"></script>
+        <script src="js/leaflet.wms.js"></script>
+        <script src="js/leaflet-measure.js"></script>
+        <script src="js/proj4.js"></script>
+        <script src="js/proj4leaflet.js"></script>
+        <script src="js/tailDT.js"></script>
+<script src="js/nouislider.min.js"></script>
+<script src="js/wNumb.js"></script>
+        <script src="data/FSC_SK_WEBMAP_1.js"></script>
+        <script src="data/RIVER_FSC_2.js"></script>
+        <script src="data/Stream_nara_3.js"></script>
+        <script src="data/Prv_New_4.js"></script>
+        <script src="data/Tam_New_5.js"></script>
+        <script>
+        var highlightLayer;
+        function highlightFeature(e) {
+            highlightLayer = e.target;
+
+            if (e.target.feature.geometry.type === 'LineString') {
+              highlightLayer.setStyle({
+                color: '#ffff00',
+              });
+            } else {
+              highlightLayer.setStyle({
+                fillColor: '#ffff00',
+                fillOpacity: 1
+              });
+            }
+        }
+        var crs = new L.Proj.CRS('EPSG:32647', '+proj=utm +zone=47 +datum=WGS84 +units=m +no_defs', {
+            resolutions: [2800, 1400, 700, 350, 175, 84, 42, 21, 11.2, 5.6, 2.8, 1.4, 0.7, 0.35, 0.14, 0.07],
+        });
+        var map = L.map('map', {
+            crs: crs,
+            continuousWorld: false,
+            worldCopyJump: false, 
+            zoomControl:true, maxZoom:22, minZoom:1
+        }).fitBounds([[6.129422369387385,101.40515320258842],[6.236842160624074,101.61291495229648]]);
+        var hash = new L.Hash(map);
+        map.attributionControl.setPrefix('<a href="https://github.com/tomchadwin/qgis2web" target="_blank">qgis2web</a> &middot; <a href="https://leafletjs.com" title="A JS library for interactive maps">Leaflet</a> &middot; <a href="https://qgis.org">QGIS</a>');
+        var autolinker = new Autolinker({truncate: {length: 30, location: 'smart'}});
+        L.control.locate({locateOptions: {maxZoom: 19}}).addTo(map);
+        var measureControl = new L.Control.Measure({
+            position: 'topleft',
+            primaryLengthUnit: 'meters',
+            secondaryLengthUnit: 'kilometers',
+            primaryAreaUnit: 'sqmeters',
+            secondaryAreaUnit: 'hectares'
+        });
+        measureControl.addTo(map);
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .innerHTML = '';
+        document.getElementsByClassName('leaflet-control-measure-toggle')[0]
+        .className += ' fas fa-ruler';
+        var bounds_group = new L.featureGroup([]);
+        function setBounds() {
+        }
+        map.createPane('pane_GoogleSatelliteHybrid_0');
+        map.getPane('pane_GoogleSatelliteHybrid_0').style.zIndex = 400;
+        var layer_GoogleSatelliteHybrid_0 = L.tileLayer('https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+            pane: 'pane_GoogleSatelliteHybrid_0',
+            opacity: 1.0,
+            attribution: '',
+            minZoom: 1,
+            maxZoom: 22,
+        });
+        layer_GoogleSatelliteHybrid_0;
+        map.addLayer(layer_GoogleSatelliteHybrid_0);
+        function pop_FSC_SK_WEBMAP_1(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <th scope="row">FSC_ID</th>\
+                        <td>' + (feature.properties['FSC_ID'] !== null ? autolinker.link(feature.properties['FSC_ID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">X</th>\
+                        <td>' + (feature.properties['X'] !== null ? autolinker.link(feature.properties['X'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Y</th>\
+                        <td>' + (feature.properties['Y'] !== null ? autolinker.link(feature.properties['Y'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LATITUDE</th>\
+                        <td>' + (feature.properties['LATITUDE'] !== null ? autolinker.link(feature.properties['LATITUDE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">LONGITUDE</th>\
+                        <td>' + (feature.properties['LONGITUDE'] !== null ? autolinker.link(feature.properties['LONGITUDE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">ชื่อ</th>\
+                        <td>' + (feature.properties['ชื่อ'] !== null ? autolinker.link(feature.properties['ชื่อ'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">ประเภทที่ดิน</th>\
+                        <td>' + (feature.properties['ประเภทที่ดิน'] !== null ? autolinker.link(feature.properties['ประเภทที่ดิน'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">เลขที่ดิน</th>\
+                        <td>' + (feature.properties['เลขที่ดิน'] !== null ? autolinker.link(feature.properties['เลขที่ดิน'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">เลขบัตรประชาชน</th>\
+                        <td>' + (feature.properties['เลขบัตรประชาชน'] !== null ? autolinker.link(feature.properties['เลขบัตรประชาชน'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">เลขทะเบียนเกษตรกร</th>\
+                        <td>' + (feature.properties['เลขทะเบียนเกษตรกร'] !== null ? autolinker.link(feature.properties['เลขทะเบียนเกษตรกร'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">จัดการสวน</th>\
+                        <td>' + (feature.properties['จัดการสวน'] !== null ? autolinker.link(feature.properties['จัดการสวน'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">ชื่อผู้จัดการสวน</th>\
+                        <td>' + (feature.properties['ชื่อผู้จัดการสวน'] !== null ? autolinker.link(feature.properties['ชื่อผู้จัดการสวน'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">เนื้อที่</th>\
+                        <td>' + (feature.properties['เนื้อที่'] !== null ? autolinker.link(feature.properties['เนื้อที่'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">พันธุ์ยาง</th>\
+                        <td>' + (feature.properties['พันธุ์ยาง'] !== null ? autolinker.link(feature.properties['พันธุ์ยาง'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">ระยะปลูก</th>\
+                        <td>' + (feature.properties['ระยะปลูก'] !== null ? autolinker.link(feature.properties['ระยะปลูก'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_FSC_SK_WEBMAP_1_0() {
+            return {
+                pane: 'pane_FSC_SK_WEBMAP_1',
+                opacity: 1,
+                color: 'rgba(251,220,12,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_FSC_SK_WEBMAP_1');
+        map.getPane('pane_FSC_SK_WEBMAP_1').style.zIndex = 401;
+        map.getPane('pane_FSC_SK_WEBMAP_1').style['mix-blend-mode'] = 'normal';
+        var layer_FSC_SK_WEBMAP_1 = new L.geoJson(json_FSC_SK_WEBMAP_1, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_FSC_SK_WEBMAP_1',
+            layerName: 'layer_FSC_SK_WEBMAP_1',
+            pane: 'pane_FSC_SK_WEBMAP_1',
+            onEachFeature: pop_FSC_SK_WEBMAP_1,
+            style: style_FSC_SK_WEBMAP_1_0,
+        });
+        bounds_group.addLayer(layer_FSC_SK_WEBMAP_1);
+        map.addLayer(layer_FSC_SK_WEBMAP_1);
+        function pop_RIVER_FSC_2(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OBJECTID'] !== null ? autolinker.link(feature.properties['OBJECTID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STR_ID'] !== null ? autolinker.link(feature.properties['STR_ID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LOCAL_NAM'] !== null ? autolinker.link(feature.properties['LOCAL_NAM'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STR_type'] !== null ? autolinker.link(feature.properties['STR_type'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STR_Name_T'] !== null ? autolinker.link(feature.properties['STR_Name_T'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STR_Name_E'] !== null ? autolinker.link(feature.properties['STR_Name_E'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_RIVER_FSC_2_0() {
+            return {
+                pane: 'pane_RIVER_FSC_2',
+                stroke: false, 
+                fill: true,
+                fillOpacity: 1,
+                fillColor: 'rgba(28,12,243,0.41568627450980394)',
+                interactive: true,
+            }
+        }
+        map.createPane('pane_RIVER_FSC_2');
+        map.getPane('pane_RIVER_FSC_2').style.zIndex = 402;
+        map.getPane('pane_RIVER_FSC_2').style['mix-blend-mode'] = 'normal';
+        var layer_RIVER_FSC_2 = new L.geoJson(json_RIVER_FSC_2, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_RIVER_FSC_2',
+            layerName: 'layer_RIVER_FSC_2',
+            pane: 'pane_RIVER_FSC_2',
+            onEachFeature: pop_RIVER_FSC_2,
+            style: style_RIVER_FSC_2_0,
+        });
+        bounds_group.addLayer(layer_RIVER_FSC_2);
+        map.addLayer(layer_RIVER_FSC_2);
+        function pop_Stream_nara_3(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['OBJECTID'] !== null ? autolinker.link(feature.properties['OBJECTID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STR_ID'] !== null ? autolinker.link(feature.properties['STR_ID'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['LOCAL_NAM'] !== null ? autolinker.link(feature.properties['LOCAL_NAM'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['Shape_Leng'] !== null ? autolinker.link(feature.properties['Shape_Leng'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STR_type'] !== null ? autolinker.link(feature.properties['STR_type'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STR_Name_T'] !== null ? autolinker.link(feature.properties['STR_Name_T'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['STR_Name_E'] !== null ? autolinker.link(feature.properties['STR_Name_E'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Stream_nara_3_0() {
+            return {
+                pane: 'pane_Stream_nara_3',
+                opacity: 1,
+                color: 'rgba(9,19,249,0.4745098039215686)',
+                dashArray: '',
+                lineCap: 'square',
+                lineJoin: 'bevel',
+                weight: 1.0,
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Stream_nara_3');
+        map.getPane('pane_Stream_nara_3').style.zIndex = 403;
+        map.getPane('pane_Stream_nara_3').style['mix-blend-mode'] = 'normal';
+        var layer_Stream_nara_3 = new L.geoJson(json_Stream_nara_3, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Stream_nara_3',
+            layerName: 'layer_Stream_nara_3',
+            pane: 'pane_Stream_nara_3',
+            onEachFeature: pop_Stream_nara_3,
+            style: style_Stream_nara_3_0,
+        });
+        bounds_group.addLayer(layer_Stream_nara_3);
+        map.addLayer(layer_Stream_nara_3);
+        function pop_Prv_New_4(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['AREA'] !== null ? autolinker.link(feature.properties['AREA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['AMP_CODE'] !== null ? autolinker.link(feature.properties['AMP_CODE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">AMP_NAM_T</th>\
+                        <td>' + (feature.properties['AMP_NAM_T'] !== null ? autolinker.link(feature.properties['AMP_NAM_T'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">AMP_NAM_E</th>\
+                        <td>' + (feature.properties['AMP_NAM_E'] !== null ? autolinker.link(feature.properties['AMP_NAM_E'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <th scope="row">Prv_Name</th>\
+                        <td>' + (feature.properties['Prv_Name'] !== null ? autolinker.link(feature.properties['Prv_Name'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Prv_New_4_0() {
+            return {
+                pane: 'pane_Prv_New_4',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 4.0, 
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Prv_New_4');
+        map.getPane('pane_Prv_New_4').style.zIndex = 404;
+        map.getPane('pane_Prv_New_4').style['mix-blend-mode'] = 'normal';
+        var layer_Prv_New_4 = new L.geoJson(json_Prv_New_4, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Prv_New_4',
+            layerName: 'layer_Prv_New_4',
+            pane: 'pane_Prv_New_4',
+            onEachFeature: pop_Prv_New_4,
+            style: style_Prv_New_4_0,
+        });
+        bounds_group.addLayer(layer_Prv_New_4);
+        map.addLayer(layer_Prv_New_4);
+        function pop_Tam_New_5(feature, layer) {
+            layer.on({
+                mouseout: function(e) {
+                    for (i in e.target._eventParents) {
+                        e.target._eventParents[i].resetStyle(e.target);
+                    }
+                },
+                mouseover: highlightFeature,
+            });
+            var popupContent = '<table>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['AREA'] !== null ? autolinker.link(feature.properties['AREA'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TAM_CODE'] !== null ? autolinker.link(feature.properties['TAM_CODE'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TAM_NAM_T'] !== null ? autolinker.link(feature.properties['TAM_NAM_T'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                    <tr>\
+                        <td colspan="2">' + (feature.properties['TAM_NAM_E'] !== null ? autolinker.link(feature.properties['TAM_NAM_E'].toLocaleString()) : '') + '</td>\
+                    </tr>\
+                </table>';
+            layer.bindPopup(popupContent, {maxHeight: 400});
+        }
+
+        function style_Tam_New_5_0() {
+            return {
+                pane: 'pane_Tam_New_5',
+                opacity: 1,
+                color: 'rgba(35,35,35,1.0)',
+                dashArray: '10,5,1,5,1,5',
+                lineCap: 'butt',
+                lineJoin: 'miter',
+                weight: 2.0, 
+                fillOpacity: 0,
+                interactive: true,
+            }
+        }
+        map.createPane('pane_Tam_New_5');
+        map.getPane('pane_Tam_New_5').style.zIndex = 405;
+        map.getPane('pane_Tam_New_5').style['mix-blend-mode'] = 'normal';
+        var layer_Tam_New_5 = new L.geoJson(json_Tam_New_5, {
+            attribution: '',
+            interactive: true,
+            dataVar: 'json_Tam_New_5',
+            layerName: 'layer_Tam_New_5',
+            pane: 'pane_Tam_New_5',
+            onEachFeature: pop_Tam_New_5,
+            style: style_Tam_New_5_0,
+        });
+        bounds_group.addLayer(layer_Tam_New_5);
+        map.addLayer(layer_Tam_New_5);
+        map.createPane('pane_MV_SPARCEL_6');
+        map.getPane('pane_MV_SPARCEL_6').style.zIndex = 406;
+        var layer_MV_SPARCEL_6 = L.WMS.layer("http://110.164.49.72:8081/geoserver/WMSDOL/wms?layers=WMSDOL:MV_SPARCEL&styles=&transparent=true&version=1.1.1&&srs=EPSG:4326", "MV_SPARCEL", {
+            pane: 'pane_MV_SPARCEL_6',
+            format: 'image/png',
+            uppercase: true,
+            transparent: true,
+            continuousWorld : true,
+            tiled: true,
+            info_format: 'text/html',
+            opacity: 1,
+            identify: false,
+            attribution: '',
+        });
+        map.addLayer(layer_MV_SPARCEL_6);
+        var baseMaps = {};
+        L.control.layers(baseMaps,{"MV_SPARCEL": layer_MV_SPARCEL_6,'<img src="legend/Tam_New_5.png" /> Tam_New': layer_Tam_New_5,'<img src="legend/Prv_New_4.png" /> Prv_New': layer_Prv_New_4,'<img src="legend/Stream_nara_3.png" /> Stream_nara': layer_Stream_nara_3,'<img src="legend/RIVER_FSC_2.png" /> RIVER_FSC': layer_RIVER_FSC_2,'<img src="legend/FSC_SK_WEBMAP_1.png" /> FSC_SK_WEBMAP': layer_FSC_SK_WEBMAP_1,"Google Satellite Hybrid": layer_GoogleSatelliteHybrid_0,}).addTo(map);
+        setBounds();
+        var i = 0;
+        layer_FSC_SK_WEBMAP_1.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['ชื่อ'] !== null?String('<div style="color: #ba0909; font-size: 10pt; font-family: \'TH SarabunPSK\', sans-serif;">' + layer.feature.properties['ชื่อ']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_FSC_SK_WEBMAP_1'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+        var mapDiv = document.getElementById('map');
+        var row = document.createElement('div');
+        row.className="row";
+        row.id="all";
+        row.style.height = "100%";
+        var col1 = document.createElement('div');
+        col1.className="col9";
+        col1.id = "mapWindow";
+        col1.style.height = "99%";
+        col1.style.width = "80%";
+        col1.style.display = "inline-block";
+        var col2 = document.createElement('div');
+        col2.className="col3";
+        col2.id = "menu";
+        col2.style.display = "inline-block";
+        mapDiv.parentNode.insertBefore(row, mapDiv);
+        document.getElementById("all").appendChild(col1);
+        document.getElementById("all").appendChild(col2);
+        col1.appendChild(mapDiv)
+        var Filters = {"LONGITUDE": "real","ชื่อ": "str"};
+        function filterFunc() {
+          map.eachLayer(function(lyr){
+          if ("options" in lyr && "dataVar" in lyr["options"]){
+            features = this[lyr["options"]["dataVar"]].features.slice(0);
+            try{
+              for (key in Filters){
+                keyS = key.replace(/[^a-zA-Z0-9_]/g, "")
+                if (Filters[key] == "str" || Filters[key] == "bool"){
+                  var selection = [];
+                  var options = document.getElementById("sel_" + keyS).options
+                  for (var i=0; i < options.length; i++) {
+                    if (options[i].selected) selection.push(options[i].value);
+                  }
+                    try{
+                      if (key in features[0].properties){
+                        for (i = features.length - 1;
+                          i >= 0; --i){
+                          if (selection.indexOf(
+                          features[i].properties[key])<0
+                          && selection.length>0) {
+                          features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                  }
+                }
+                if (Filters[key] == "int"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (parseInt(features[i].properties[key])
+                          < sliderVals[0]
+                          || parseInt(features[i].properties[key])
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "real"){
+                  sliderVals =  document.getElementById(
+                    "div_" + keyS).noUiSlider.get();
+                  try{
+                    if (key in features[0].properties){
+                    for (i = features.length - 1; i >= 0; --i){
+                      if (features[i].properties[key]
+                          < sliderVals[0]
+                          || features[i].properties[key]
+                          > sliderVals[1]){
+                            features.splice(i,1);
+                          }
+                        }
+                      }
+                    } catch(err){
+                    }
+                  }
+                if (Filters[key] == "date"
+                  || Filters[key] == "datetime"
+                  || Filters[key] == "time"){
+                  try{
+                    if (key in features[0].properties){
+                      HTMLkey = key.replace(/[&\/\\#,+()$~%.'":*?<>{} ]/g, '');
+                      startdate = document.getElementById("dat_" +
+                        HTMLkey + "_date1").value.replace(" ", "T");
+                      enddate = document.getElementById("dat_" +
+                        HTMLkey + "_date2").value.replace(" ", "T");
+                      for (i = features.length - 1; i >= 0; --i){
+                        if (features[i].properties[key] < startdate
+                          || features[i].properties[key] > enddate){
+                          features.splice(i,1);
+                        }
+                      }
+                    }
+                  } catch(err){
+                  }
+                }
+              }
+            } catch(err){
+            }
+          this[lyr["options"]["layerName"]].clearLayers();
+          this[lyr["options"]["layerName"]].addData(features);
+        var i = 0;
+        layer_FSC_SK_WEBMAP_1.eachLayer(function(layer) {
+            var context = {
+                feature: layer.feature,
+                variables: {}
+            };
+            layer.bindTooltip((layer.feature.properties['ชื่อ'] !== null?String('<div style="color: #ba0909; font-size: 10pt; font-family: \'TH SarabunPSK\', sans-serif;">' + layer.feature.properties['ชื่อ']) + '</div>':''), {permanent: true, offset: [-0, -16], className: 'css_FSC_SK_WEBMAP_1'});
+            labels.push(layer);
+            totalMarkers += 1;
+              layer.added = true;
+              addLabel(layer, i);
+              i++;
+        });
+          }
+          })
+        }
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_LONGITUDE = document.createElement("div");
+            div_LONGITUDE.id = "div_LONGITUDE";
+            div_LONGITUDE.className = "slider";
+            document.getElementById("menu").appendChild(div_LONGITUDE);
+            var lab_LONGITUDE = document.createElement('div');
+            lab_LONGITUDE.innerHTML  = 'LONGITUDE: <span id="val_LONGITUDE"></span>';
+            lab_LONGITUDE.className = 'filterlabel';
+            document.getElementById("menu").appendChild(lab_LONGITUDE);
+            var reset_LONGITUDE = document.createElement('div');
+            reset_LONGITUDE.innerHTML = 'clear filter';
+            reset_LONGITUDE.className = 'filterlabel';
+            lab_LONGITUDE.className = 'filterlabel';
+            reset_LONGITUDE.onclick = function() {
+                sel_LONGITUDE.noUiSlider.reset();
+            };
+            document.getElementById("menu").appendChild(reset_LONGITUDE);
+            var sel_LONGITUDE = document.getElementById('div_LONGITUDE');
+            noUiSlider.create(sel_LONGITUDE, {
+                connect: true,
+                start: [101.440367, 101.488875],
+                range: {
+                min: 101.440367,
+                max: 101.488875
+                }
+            });
+            sel_LONGITUDE.noUiSlider.on('update', function (values) {
+            val_LONGITUDE = document.getElementById('val_LONGITUDE');
+            val_LONGITUDE.innerHTML = values.join(' - ');
+                filterFunc()
+            });
+            document.getElementById("menu").appendChild(
+                document.createElement("div"));
+            var div_ = document.createElement('div');
+            div_.id = "div_";
+            div_.className= "filterselect";
+            document.getElementById("menu").appendChild(div_);
+            sel_ = document.createElement('select');
+            sel_.multiple = true;
+            sel_.size = 10;
+            sel_.id = "sel_";
+            var _options_str = "<option value='' unselected></option>";
+            sel_.onchange = function(){filterFunc()};
+            _options_str  += '<option value="นางคอลีเยาะ บากา">นางคอลีเยาะ บากา</option>';
+            _options_str  += '<option value="นางพอตีเมาะ มิงขะ">นางพอตีเมาะ มิงขะ</option>';
+            _options_str  += '<option value="นางรอยียะ กาจิ">นางรอยียะ กาจิ</option>';
+            _options_str  += '<option value="นางลาตีปะ สาแม็ง">นางลาตีปะ สาแม็ง</option>';
+            _options_str  += '<option value="นางสาวคอปือเสาะ คาเดร์">นางสาวคอปือเสาะ คาเดร์</option>';
+            _options_str  += '<option value="นางสาวพาอีสะห์ บือแน">นางสาวพาอีสะห์ บือแน</option>';
+            _options_str  += '<option value="นางสาวมารีแย สาและ">นางสาวมารีแย สาและ</option>';
+            _options_str  += '<option value="นางสาวยามีลา อับดุลยีงอ">นางสาวยามีลา อับดุลยีงอ</option>';
+            _options_str  += '<option value="นางสาวรอกาเยาะห์ สะแม">นางสาวรอกาเยาะห์ สะแม</option>';
+            _options_str  += '<option value="นางสาวรูกาเยาะ แปเฮาะอีแล">นางสาวรูกาเยาะ แปเฮาะอีแล</option>';
+            _options_str  += '<option value="นางสาวหนินะ หนิมา">นางสาวหนินะ หนิมา</option>';
+            _options_str  += '<option value="นางสาวหาลีเมาะ ยีอาลี">นางสาวหาลีเมาะ ยีอาลี</option>';
+            _options_str  += '<option value="นางสาวอัยดา บากา">นางสาวอัยดา บากา</option>';
+            _options_str  += '<option value="นางสาวอัสมานี บากา">นางสาวอัสมานี บากา</option>';
+            _options_str  += '<option value="นางสาวอามีเนาะ วาจิ">นางสาวอามีเนาะ วาจิ</option>';
+            _options_str  += '<option value="นางอาเดะ ยูโซะ">นางอาเดะ ยูโซะ</option>';
+            _options_str  += '<option value="นางแมะเสาะ ยูนุ๊">นางแมะเสาะ ยูนุ๊</option>';
+            _options_str  += '<option value="นางแวลีเมาะ วาจิ">นางแวลีเมาะ วาจิ</option>';
+            _options_str  += '<option value="นายการียา กาเราะ">นายการียา กาเราะ</option>';
+            _options_str  += '<option value="นายซาบูดิง ลอเด็ง">นายซาบูดิง ลอเด็ง</option>';
+            _options_str  += '<option value="นายตาเยะ บือซา">นายตาเยะ บือซา</option>';
+            _options_str  += '<option value="นายบรอเฮม ดอเลาะ">นายบรอเฮม ดอเลาะ</option>';
+            _options_str  += '<option value="นายมะ เปาะนา">นายมะ เปาะนา</option>';
+            _options_str  += '<option value="นายมะกือตา หะยีเด็น">นายมะกือตา หะยีเด็น</option>';
+            _options_str  += '<option value="นายมะดาโอะ ยีอาลี">นายมะดาโอะ ยีอาลี</option>';
+            _options_str  += '<option value="นายมะปอลี โตะเจะ">นายมะปอลี โตะเจะ</option>';
+            _options_str  += '<option value="นายมะยาเตง บือแน">นายมะยาเตง บือแน</option>';
+            _options_str  += '<option value="นายมูหามะสาวดีวาจิ">นายมูหามะสาวดีวาจิ</option>';
+            _options_str  += '<option value="นายมูฮามัด เวาะแซ">นายมูฮามัด เวาะแซ</option>';
+            _options_str  += '<option value="นายยะโกะ สาอุ">นายยะโกะ สาอุ</option>';
+            _options_str  += '<option value="นายรอนิง  มิงขะ">นายรอนิง  มิงขะ</option>';
+            _options_str  += '<option value="นายรูเด็ง ซากอ">นายรูเด็ง ซากอ</option>';
+            _options_str  += '<option value="นายสะรี กาเกาะ">นายสะรี กาเกาะ</option>';
+            _options_str  += '<option value="นายสาการียา อีแต">นายสาการียา อีแต</option>';
+            _options_str  += '<option value="นายสาและ กูโด">นายสาและ กูโด</option>';
+            _options_str  += '<option value="นายหะแว สมาแห">นายหะแว สมาแห</option>';
+            _options_str  += '<option value="นายหามะ หนิมา">นายหามะ หนิมา</option>';
+            _options_str  += '<option value="นายอับดุลรอรอฮะ โต๊ะปิ">นายอับดุลรอรอฮะ โต๊ะปิ</option>';
+            _options_str  += '<option value="นายอับดุลเลาะ วาจิ">นายอับดุลเลาะ วาจิ</option>';
+            _options_str  += '<option value="นายอัมรี ยุโซะ">นายอัมรี ยุโซะ</option>';
+            _options_str  += '<option value="นายอามะ สะมะแอ">นายอามะ สะมะแอ</option>';
+            _options_str  += '<option value="นายอาสบูเลาะ วาจิ">นายอาสบูเลาะ วาจิ</option>';
+            _options_str  += '<option value="นายอาหะมะ มะลี">นายอาหะมะ มะลี</option>';
+            _options_str  += '<option value="นายอาหะมะหานาปี วาจิ">นายอาหะมะหานาปี วาจิ</option>';
+            _options_str  += '<option value="นายอาหามะ เจ๊ะอาลี">นายอาหามะ เจ๊ะอาลี</option>';
+            _options_str  += '<option value="นายฮาซัน อารง">นายฮาซัน อารง</option>';
+            _options_str  += '<option value="นายฮาซาน ซากอ">นายฮาซาน ซากอ</option>';
+            _options_str  += '<option value="นายเจะมูดอ ปาเสหม๊ะ">นายเจะมูดอ ปาเสหม๊ะ</option>';
+            _options_str  += '<option value="นายแวสะมะแอ เลาะสแต">นายแวสะมะแอ เลาะสแต</option>';
+            sel_.innerHTML = _options_str;
+            div_.appendChild(sel_);
+            var lab_ = document.createElement('div');
+            lab_.innerHTML = 'ชื่อ';
+            lab_.className = 'filterlabel';
+            div_.appendChild(lab_);
+            var reset_ = document.createElement('div');
+            reset_.innerHTML = 'clear filter';
+            reset_.className = 'filterlabel';
+            reset_.onclick = function() {
+                var options = document.getElementById("sel_").options;
+                for (var i=0; i < options.length; i++) {
+                    options[i].selected = false;
+                }
+                filterFunc();
+            };
+            div_.appendChild(reset_);
+        resetLabels([layer_FSC_SK_WEBMAP_1]);
+        map.on("zoomend", function(){
+            resetLabels([layer_FSC_SK_WEBMAP_1]);
+        });
+        map.on("layeradd", function(){
+            resetLabels([layer_FSC_SK_WEBMAP_1]);
+        });
+        map.on("layerremove", function(){
+            resetLabels([layer_FSC_SK_WEBMAP_1]);
+        });
+        </script>
+    </body>
+</html>
